@@ -47,13 +47,13 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "CompanyName", "goagent.org\0"
-            VALUE "FileDescription", "goagent(taskbar)\0"
+            VALUE "CompanyName", "dakad\0"
+            VALUE "FileDescription", "dakad(taskbar)\0"
             VALUE "FileVersion", "1, 0, 0, 0\0"
             VALUE "InternalName", "taskbar\0"
             VALUE "LegalCopyright", "MIT License\0"
             VALUE "OriginalFilename", "taskbar.exe\0"
-            VALUE "ProductName", "goagent taskbar\0"
+            VALUE "ProductName", "dakad taskbar\0"
             VALUE "ProductVersion", "1, 0, 0, 0\0"
         END
     END
@@ -85,8 +85,8 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_TASKBAR             ICON    DISCARDABLE     "taskbar.ICO"
-IDI_SMALL               ICON    DISCARDABLE     "SMALL.ICO"
+IDI_TASKBAR             ICON    DISCARDABLE     "..\\res\\48.ico"
+IDI_SMALL               ICON    DISCARDABLE     "..\\res\\16.ico"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -124,9 +124,9 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    IDS_CMDLINE             "cmd.exe"
-    IDS_ENVIRONMENT         "GEVENT_RESOLVER=block\nTASKBAR_VISIBLE=0\nTASKBAR_TOOLTIP=GoAgent\nTASKBAR_TITLE=GoAgent Notify\nTASKBAR_BALLOON=GoAgent 已经启动，单击托盘图标可以最小化。\n"
-    IDS_PROXYLIST           "http://127.0.0.1:8086/proxy.pac\n127.0.0.1:8087\n"
+    IDS_CMDLINE             "zsHRIS.exe"
+    IDS_ENVIRONMENT         "TASKBAR_VISIBLE=0\nTASKBAR_TOOLTIP=dakad\nTASKBAR_TITLE=dakad Notify\nTASKBAR_BALLOON=dakad 已经启动，单击托盘图标可以最小化。\n"
+    //IDS_PROXYLIST           "http://127.0.0.1:8086/proxy.pac\n127.0.0.1:8087\n"
 END
 
 #endif    // Chinese (P.R.C.) resources
@@ -143,4 +143,3 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

@@ -1,10 +1,9 @@
-#define _WIN32_IE 0x0500
+//#define _WIN32_IE 0x0500
 
 #include <windows.h>
-#include <wininet.h>
+//#include <wininet.h>
 #include <shellapi.h>
 #include <stdio.h>
-#include <wininet.h>
 #include <io.h>
 #include "psapi.h"
 #include "resource.h"
@@ -12,41 +11,41 @@
 #pragma comment(lib, "shell32.lib")
 #pragma comment(lib, "psapi.lib")
 #pragma comment(lib, "advapi32.lib")
-#pragma comment(lib, "wininet.lib")
+//#pragma comment(lib, "wininet.lib")
 
-#ifndef INTERNET_OPTION_PER_CONNECTION_OPTION
+//#ifndef INTERNET_OPTION_PER_CONNECTION_OPTION
 
-#define INTERNET_OPTION_PER_CONNECTION_OPTION           75
+//#define INTERNET_OPTION_PER_CONNECTION_OPTION           75
 // Options used in INTERNET_PER_CONN_OPTON struct
-#define INTERNET_PER_CONN_FLAGS                         1
-#define INTERNET_PER_CONN_PROXY_SERVER                  2
-#define INTERNET_PER_CONN_PROXY_BYPASS                  3
-#define INTERNET_PER_CONN_AUTOCONFIG_URL                4
-#define INTERNET_PER_CONN_AUTODISCOVERY_FLAGS           5
+//#define INTERNET_PER_CONN_FLAGS                         1
+//#define INTERNET_PER_CONN_PROXY_SERVER                  2
+//#define INTERNET_PER_CONN_PROXY_BYPASS                  3
+//#define INTERNET_PER_CONN_AUTOCONFIG_URL                4
+//#define INTERNET_PER_CONN_AUTODISCOVERY_FLAGS           5
 // PER_CONN_FLAGS
-#define PROXY_TYPE_DIRECT                               0x00000001
-#define PROXY_TYPE_PROXY                                0x00000002
-#define PROXY_TYPE_AUTO_PROXY_URL                       0x00000004
-#define PROXY_TYPE_AUTO_DETECT                          0x00000008
+//#define PROXY_TYPE_DIRECT                               0x00000001
+//#define PROXY_TYPE_PROXY                                0x00000002
+//#define PROXY_TYPE_AUTO_PROXY_URL                       0x00000004
+//#define PROXY_TYPE_AUTO_DETECT                          0x00000008
 
-typedef struct {
-  DWORD dwOption;
-  union {
-    DWORD    dwValue;
-    LPTSTR   pszValue;
-    FILETIME ftValue;
-  } Value;
-} INTERNET_PER_CONN_OPTION, *LPINTERNET_PER_CONN_OPTION;
+//typedef struct {
+//  DWORD dwOption;
+//  union {
+//    DWORD    dwValue;
+//    LPTSTR   pszValue;
+//    FILETIME ftValue;
+//  } Value;
+//} INTERNET_PER_CONN_OPTION, *LPINTERNET_PER_CONN_OPTION;
 
-typedef struct {
-  DWORD                      dwSize;
-  LPTSTR                     pszConnection;
-  DWORD                      dwOptionCount;
-  DWORD                      dwOptionError;
-  LPINTERNET_PER_CONN_OPTION pOptions;
-} INTERNET_PER_CONN_OPTION_LIST, *LPINTERNET_PER_CONN_OPTION_LIST;
+//typedef struct {
+//  DWORD                      dwSize;
+//  LPTSTR                     pszConnection;
+//  DWORD                      dwOptionCount;
+//  DWORD                      dwOptionError;
+//  LPINTERNET_PER_CONN_OPTION pOptions;
+//} INTERNET_PER_CONN_OPTION_LIST, *LPINTERNET_PER_CONN_OPTION_LIST;
 
-#endif
+//#endif
 
 extern "C" WINBASEAPI HWND WINAPI GetConsoleWindow();
 
@@ -57,7 +56,7 @@ extern "C" WINBASEAPI HWND WINAPI GetConsoleWindow();
 #define WM_TASKBARNOTIFY_MENUITEM_RELOAD (WM_USER + 23)
 #define WM_TASKBARNOTIFY_MENUITEM_ABOUT (WM_USER + 24)
 #define WM_TASKBARNOTIFY_MENUITEM_EXIT (WM_USER + 25)
-#define WM_TASKBARNOTIFY_MENUITEM_PROXYLIST_BASE (WM_USER + 26)
+//#define WM_TASKBARNOTIFY_MENUITEM_PROXYLIST_BASE (WM_USER + 26)
 
 HINSTANCE hInst;
 HWND hWnd;
@@ -68,8 +67,8 @@ WCHAR szCommandLine[1024] = L"";
 WCHAR szTooltip[512] = L"";
 WCHAR szBalloon[512] = L"";
 WCHAR szEnvironment[1024] = L"";
-WCHAR szProxyString[2048] = L"";
-WCHAR *lpProxyList[8] = {0};
+//WCHAR szProxyString[2048] = L"";
+//WCHAR *lpProxyList[8] = {0};
 volatile DWORD dwChildrenPid;
 
 static DWORD MyGetProcessId(HANDLE hProcess)
@@ -109,7 +108,8 @@ static DWORD MyGetProcessId(HANDLE hProcess)
 	return 0;
 }
 
-BOOL ShowTrayIcon(LPCTSTR lpszProxy, DWORD dwMessage=NIM_ADD)
+//BOOL ShowTrayIcon(LPCTSTR lpszProxy, DWORD dwMessage=NIM_ADD)
+BOOL ShowTrayIcon(DWORD dwMessage=NIM_ADD)
 {
 	NOTIFYICONDATA nid;
 	ZeroMemory(&nid, sizeof(NOTIFYICONDATA));
@@ -120,22 +120,24 @@ BOOL ShowTrayIcon(LPCTSTR lpszProxy, DWORD dwMessage=NIM_ADD)
 	nid.dwInfoFlags=NIIF_INFO;
 	nid.uCallbackMessage = WM_TASKBARNOTIFY;
 	nid.hIcon = LoadIcon(hInst, (LPCTSTR)IDI_SMALL);
-	nid.uTimeoutAndVersion = 3 * 1000 | NOTIFYICON_VERSION;
+	//nid.uTimeoutAndVersion = 3 * 1000 | NOTIFYICON_VERSION;
+	nid.uTimeout = 3 * 1000;
+	nid.uVersion = NOTIFYICON_VERSION;
 	lstrcpy(nid.szInfoTitle, szTitle);
-	if (lpszProxy)
-	{
+	//if (lpszProxy)
+	//{
 		nid.uFlags |= NIF_INFO|NIF_TIP;
-		if (lstrlen(lpszProxy) > 0)
-		{
-			lstrcpy(nid.szTip, lpszProxy);
-			lstrcpy(nid.szInfo, lpszProxy);
-		}
-		else
-		{
+	//	if (lstrlen(lpszProxy) > 0)
+	//	{
+	//		lstrcpy(nid.szTip, lpszProxy);
+	//		lstrcpy(nid.szInfo, lpszProxy);
+	//	}
+	//	else
+	//	{
 			lstrcpy(nid.szInfo, szBalloon);
 			lstrcpy(nid.szTip, szTooltip);
-		}
-	}
+	//	}
+	//}
 	Shell_NotifyIcon(dwMessage, &nid);
 	return TRUE;
 }
@@ -151,148 +153,148 @@ BOOL DeleteTrayIcon()
 }
 
 
-LPCTSTR GetWindowsProxy()
-{
-	static WCHAR szProxy[1024] = {0};
-    HKEY hKey;
-	DWORD dwData = 0;
-	DWORD dwSize = sizeof(DWORD);
+//LPCTSTR GetWindowsProxy()
+//{
+//	static WCHAR szProxy[1024] = {0};
+//    HKEY hKey;
+//	DWORD dwData = 0;
+//	DWORD dwSize = sizeof(DWORD);
 
-    if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_CURRENT_USER,
-		                              L"Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings",
-									  0,
-									  KEY_READ | 0x0200,
-									  &hKey))
-	{
-		szProxy[0] = 0;
-		dwSize = sizeof(szProxy)/sizeof(szProxy[0]);
-		RegQueryValueExW(hKey, L"AutoConfigURL", NULL, 0, (LPBYTE)&szProxy, &dwSize);
-		if (wcslen(szProxy))
-		{
-			RegCloseKey(hKey);
-			return szProxy;
-		}
-		dwData = 0;
-		RegQueryValueExW(hKey, L"ProxyEnable", NULL, 0, (LPBYTE)&dwData, &dwSize);
-		if (dwData == 0)
-		{
-			RegCloseKey(hKey);
-			return L"";
-		}
-		szProxy[0] = 0;
-		dwSize = sizeof(szProxy)/sizeof(szProxy[0]);
-		RegQueryValueExW(hKey, L"ProxyServer", NULL, 0, (LPBYTE)&szProxy, &dwSize);
-		if (wcslen(szProxy))
-		{
-			RegCloseKey(hKey);
-			return szProxy;
-		}
-    }
-	return szProxy;
-}
+//    if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_CURRENT_USER,
+//		                              L"Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings",
+//									  0,
+//									  KEY_READ | 0x0200,
+//									  &hKey))
+//	{
+//		szProxy[0] = 0;
+//		dwSize = sizeof(szProxy)/sizeof(szProxy[0]);
+//		RegQueryValueExW(hKey, L"AutoConfigURL", NULL, 0, (LPBYTE)&szProxy, &dwSize);
+//		if (wcslen(szProxy))
+//		{
+//			RegCloseKey(hKey);
+//			return szProxy;
+//		}
+//		dwData = 0;
+//		RegQueryValueExW(hKey, L"ProxyEnable", NULL, 0, (LPBYTE)&dwData, &dwSize);
+//		if (dwData == 0)
+//		{
+//			RegCloseKey(hKey);
+//			return L"";
+//		}
+//		szProxy[0] = 0;
+//		dwSize = sizeof(szProxy)/sizeof(szProxy[0]);
+//		RegQueryValueExW(hKey, L"ProxyServer", NULL, 0, (LPBYTE)&szProxy, &dwSize);
+//		if (wcslen(szProxy))
+//		{
+//			RegCloseKey(hKey);
+//			return szProxy;
+//		}
+//    }
+//	return szProxy;
+//}
 
 
-BOOL SetWindowsProxy(WCHAR* szProxy, WCHAR* szProxyInterface=NULL)
-{
-	INTERNET_PER_CONN_OPTION_LIST conn_options;
-    BOOL    bReturn;
-    DWORD   dwBufferSize = sizeof(conn_options);
+//BOOL SetWindowsProxy(WCHAR* szProxy, WCHAR* szProxyInterface=NULL)
+//{
+//	INTERNET_PER_CONN_OPTION_LIST conn_options;
+//    BOOL    bReturn;
+//    DWORD   dwBufferSize = sizeof(conn_options);
 
-	if (wcslen(szProxy) == 0)
-	{
-		conn_options.dwSize = dwBufferSize;
-		conn_options.pszConnection = szProxyInterface;
-		conn_options.dwOptionCount = 1;
-		conn_options.pOptions = (INTERNET_PER_CONN_OPTION*)malloc(sizeof(INTERNET_PER_CONN_OPTION)*conn_options.dwOptionCount);
-		conn_options.pOptions[0].dwOption = INTERNET_PER_CONN_FLAGS;
-		conn_options.pOptions[0].Value.dwValue = PROXY_TYPE_DIRECT;
-	}
-	else if (wcsstr(szProxy, L"://") != NULL)
-	{
-		conn_options.dwSize = dwBufferSize;
-		conn_options.pszConnection = szProxyInterface;
-		conn_options.dwOptionCount = 3;
-		conn_options.pOptions = (INTERNET_PER_CONN_OPTION*)malloc(sizeof(INTERNET_PER_CONN_OPTION)*conn_options.dwOptionCount);
-		conn_options.pOptions[0].dwOption = INTERNET_PER_CONN_FLAGS;
-		conn_options.pOptions[0].Value.dwValue = PROXY_TYPE_DIRECT | PROXY_TYPE_AUTO_PROXY_URL;
-		conn_options.pOptions[1].dwOption = INTERNET_PER_CONN_AUTOCONFIG_URL;
-		conn_options.pOptions[1].Value.pszValue = szProxy;
-		conn_options.pOptions[2].dwOption = INTERNET_PER_CONN_PROXY_BYPASS;
-		conn_options.pOptions[2].Value.pszValue = L"<local>";
-	}
-	else
-	{
-		conn_options.dwSize = dwBufferSize;
-		conn_options.pszConnection = szProxyInterface;
-		conn_options.dwOptionCount = 3;
-		conn_options.pOptions = (INTERNET_PER_CONN_OPTION*)malloc(sizeof(INTERNET_PER_CONN_OPTION)*conn_options.dwOptionCount);
-		conn_options.pOptions[0].dwOption = INTERNET_PER_CONN_FLAGS;
-		conn_options.pOptions[0].Value.dwValue = PROXY_TYPE_DIRECT | PROXY_TYPE_PROXY;
-		conn_options.pOptions[1].dwOption = INTERNET_PER_CONN_PROXY_SERVER;
-		conn_options.pOptions[1].Value.pszValue = szProxy;
-		conn_options.pOptions[2].dwOption = INTERNET_PER_CONN_PROXY_BYPASS;
-		conn_options.pOptions[2].Value.pszValue = L"<local>";
-	}
+//	if (wcslen(szProxy) == 0)
+//	{
+//		conn_options.dwSize = dwBufferSize;
+//		conn_options.pszConnection = szProxyInterface;
+//		conn_options.dwOptionCount = 1;
+//		conn_options.pOptions = (INTERNET_PER_CONN_OPTION*)malloc(sizeof(INTERNET_PER_CONN_OPTION)*conn_options.dwOptionCount);
+//		conn_options.pOptions[0].dwOption = INTERNET_PER_CONN_FLAGS;
+//		conn_options.pOptions[0].Value.dwValue = PROXY_TYPE_DIRECT;
+//	}
+//	else if (wcsstr(szProxy, L"://") != NULL)
+//	{
+//		conn_options.dwSize = dwBufferSize;
+//		conn_options.pszConnection = szProxyInterface;
+//		conn_options.dwOptionCount = 3;
+//		conn_options.pOptions = (INTERNET_PER_CONN_OPTION*)malloc(sizeof(INTERNET_PER_CONN_OPTION)*conn_options.dwOptionCount);
+//		conn_options.pOptions[0].dwOption = INTERNET_PER_CONN_FLAGS;
+//		conn_options.pOptions[0].Value.dwValue = PROXY_TYPE_DIRECT | PROXY_TYPE_AUTO_PROXY_URL;
+//		conn_options.pOptions[1].dwOption = INTERNET_PER_CONN_AUTOCONFIG_URL;
+//		conn_options.pOptions[1].Value.pszValue = szProxy;
+//		conn_options.pOptions[2].dwOption = INTERNET_PER_CONN_PROXY_BYPASS;
+//		conn_options.pOptions[2].Value.pszValue = L"<local>";
+//	}
+//	else
+//	{
+//		conn_options.dwSize = dwBufferSize;
+//		conn_options.pszConnection = szProxyInterface;
+//		conn_options.dwOptionCount = 3;
+//		conn_options.pOptions = (INTERNET_PER_CONN_OPTION*)malloc(sizeof(INTERNET_PER_CONN_OPTION)*conn_options.dwOptionCount);
+//		conn_options.pOptions[0].dwOption = INTERNET_PER_CONN_FLAGS;
+//		conn_options.pOptions[0].Value.dwValue = PROXY_TYPE_DIRECT | PROXY_TYPE_PROXY;
+//		conn_options.pOptions[1].dwOption = INTERNET_PER_CONN_PROXY_SERVER;
+//		conn_options.pOptions[1].Value.pszValue = szProxy;
+//		conn_options.pOptions[2].dwOption = INTERNET_PER_CONN_PROXY_BYPASS;
+//		conn_options.pOptions[2].Value.pszValue = L"<local>";
+//	}
 
-	bReturn = InternetSetOption(NULL, INTERNET_OPTION_PER_CONNECTION_OPTION, &conn_options, dwBufferSize);
-    free(conn_options.pOptions);
-    InternetSetOption(NULL, INTERNET_OPTION_SETTINGS_CHANGED, NULL, 0);
-    InternetSetOption(NULL, INTERNET_OPTION_REFRESH , NULL, 0);
-	return bReturn;
-}
+//	bReturn = InternetSetOption(NULL, INTERNET_OPTION_PER_CONNECTION_OPTION, &conn_options, dwBufferSize);
+//    free(conn_options.pOptions);
+//    InternetSetOption(NULL, INTERNET_OPTION_SETTINGS_CHANGED, NULL, 0);
+//    InternetSetOption(NULL, INTERNET_OPTION_REFRESH , NULL, 0);
+//	return bReturn;
+//}
 
 
 BOOL ShowPopupMenu()
 {
 	POINT pt;
-	HMENU hSubMenu = NULL;
-	LPCTSTR lpCurrentProxy = GetWindowsProxy();
-	if (lpProxyList[1] != NULL) 
-	{
-		hSubMenu = CreatePopupMenu();
-		for (int i = 0; lpProxyList[i]; i++)
-		{
-			UINT uFlags = wcscmp(lpProxyList[i], lpCurrentProxy) == 0 ? MF_STRING | MF_CHECKED : MF_STRING;
-			LPCTSTR lpText = wcslen(lpProxyList[i]) ? lpProxyList[i] : L"\x7981\x7528\x4ee3\x7406";
-			AppendMenu(hSubMenu, uFlags, WM_TASKBARNOTIFY_MENUITEM_PROXYLIST_BASE+i, lpText);
-		}
-	}
+	// HMENU hSubMenu = NULL;
+	// LPCTSTR lpCurrentProxy = GetWindowsProxy();
+	// if (lpProxyList[1] != NULL) 
+	// {
+	// 	hSubMenu = CreatePopupMenu();
+	// 	for (int i = 0; lpProxyList[i]; i++)
+	// 	{
+	// 		UINT uFlags = wcscmp(lpProxyList[i], lpCurrentProxy) == 0 ? MF_STRING | MF_CHECKED : MF_STRING;
+	// 		LPCTSTR lpText = wcslen(lpProxyList[i]) ? lpProxyList[i] : L"\x7981\x7528\x4ee3\x7406";
+	// 		AppendMenu(hSubMenu, uFlags, WM_TASKBARNOTIFY_MENUITEM_PROXYLIST_BASE+i, lpText);
+	// 	}
+	// }
 
 	HMENU hMenu = CreatePopupMenu();
 	AppendMenu(hMenu, MF_STRING, WM_TASKBARNOTIFY_MENUITEM_SHOW, L"\x663e\x793a");
 	AppendMenu(hMenu, MF_STRING, WM_TASKBARNOTIFY_MENUITEM_HIDE, L"\x9690\x85cf");
-	if (hSubMenu != NULL)
-	{
-		AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, L"\x8bbe\x7f6e IE \x4ee3\x7406");
-	}
+	//if (hSubMenu != NULL)
+	//{
+	//	AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, L"\x8bbe\x7f6e IE \x4ee3\x7406");
+	//}
 	AppendMenu(hMenu, MF_STRING, WM_TASKBARNOTIFY_MENUITEM_RELOAD, L"\x91cd\x65b0\x8f7d\x5165");
 	AppendMenu(hMenu, MF_STRING, WM_TASKBARNOTIFY_MENUITEM_EXIT,   L"\x9000\x51fa");
 	GetCursorPos(&pt);
 	TrackPopupMenu(hMenu, TPM_LEFTALIGN, pt.x, pt.y, 0, hWnd, NULL);
 	PostMessage(hWnd, WM_NULL, 0, 0);
-	if (hSubMenu != NULL)
-		DestroyMenu(hSubMenu);
+	//if (hSubMenu != NULL)
+	//	DestroyMenu(hSubMenu);
 	DestroyMenu(hMenu);
 	return TRUE;
 }
 
-BOOL ParseProxyList()
-{
-	WCHAR * tmpProxyString = _wcsdup(szProxyString);
-	ExpandEnvironmentStrings(tmpProxyString, szProxyString, sizeof(szProxyString)/sizeof(szProxyString[0]));
-	free(tmpProxyString);
-	WCHAR *sep = L"\n";
-	WCHAR *pos = wcstok(szProxyString, sep);
-	INT i = 0;
-	lpProxyList[i++] = L"";
-	while (pos && i < sizeof(lpProxyList)/sizeof(lpProxyList[0]))
-	{
-		lpProxyList[i++] = pos;
-		pos = wcstok(NULL, sep);
-	}
-	lpProxyList[i] = 0;
-	return TRUE;
-}
+//BOOL ParseProxyList()
+//{
+//	WCHAR * tmpProxyString = _wcsdup(szProxyString);
+//	ExpandEnvironmentStrings(tmpProxyString, szProxyString, sizeof(szProxyString)/sizeof(szProxyString[0]));
+//	free(tmpProxyString);
+//	WCHAR *sep = L"\n";
+//	WCHAR *pos = wcstok(szProxyString, sep);
+//	INT i = 0;
+//	lpProxyList[i++] = L"";
+//	while (pos && i < sizeof(lpProxyList)/sizeof(lpProxyList[0]))
+//	{
+//		lpProxyList[i++] = pos;
+//		pos = wcstok(NULL, sep);
+//	}
+//	lpProxyList[i] = 0;
+//	return TRUE;
+//}
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
@@ -324,7 +326,7 @@ BOOL SetEenvironment()
 {
 	LoadString(hInst, IDS_CMDLINE, szCommandLine, sizeof(szCommandLine)/sizeof(szCommandLine[0])-1);
 	LoadString(hInst, IDS_ENVIRONMENT, szEnvironment, sizeof(szEnvironment)/sizeof(szEnvironment[0])-1);
-	LoadString(hInst, IDS_PROXYLIST, szProxyString, sizeof(szProxyString)/sizeof(szEnvironment[0])-1);
+	//LoadString(hInst, IDS_PROXYLIST, szProxyString, sizeof(szProxyString)/sizeof(szEnvironment[0])-1);
 
 	WCHAR *sep = L"\n";
 	WCHAR *pos = NULL;
@@ -449,12 +451,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				DeleteTrayIcon();
 				PostMessage(hConsole, WM_CLOSE, 0, 0);
 			}
-			else if (WM_TASKBARNOTIFY_MENUITEM_PROXYLIST_BASE <= nID && nID <= WM_TASKBARNOTIFY_MENUITEM_PROXYLIST_BASE+sizeof(lpProxyList)/sizeof(lpProxyList[0]))
-			{
-				WCHAR *szProxy = lpProxyList[nID-WM_TASKBARNOTIFY_MENUITEM_PROXYLIST_BASE];
-				SetWindowsProxy(szProxy);
-				ShowTrayIcon(szProxy, NIM_MODIFY);
-			}
+			//else if (WM_TASKBARNOTIFY_MENUITEM_PROXYLIST_BASE <= nID && nID <= WM_TASKBARNOTIFY_MENUITEM_PROXYLIST_BASE+sizeof(lpProxyList)/sizeof(lpProxyList[0]))
+			//{
+			//	WCHAR *szProxy = lpProxyList[nID-WM_TASKBARNOTIFY_MENUITEM_PROXYLIST_BASE];
+			//	SetWindowsProxy(szProxy);
+			//	ShowTrayIcon(szProxy, NIM_MODIFY);
+			//}
 			break;
 		case WM_DESTROY:
 			PostQuitMessage(0);
@@ -462,7 +464,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		default:
 			if (message == WM_TASKBARCREATED)
 			{
-				ShowTrayIcon(NULL, NIM_ADD);
+				//ShowTrayIcon(NULL, NIM_ADD);
+				ShowTrayIcon(NIM_ADD);
 				break;
 			}
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -497,7 +500,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR lpCmdLine, int nCmd
 	hInst = hInstance;
 	CDCurrentDirectory();
 	SetEenvironment();
-	ParseProxyList();
+	//ParseProxyList();
 	MyRegisterClass(hInstance);
 	if (!InitInstance (hInstance, SW_HIDE))
 	{
@@ -505,7 +508,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR lpCmdLine, int nCmd
 	}
 	CreateConsole();
 	ExecCmdline();
-	ShowTrayIcon(GetWindowsProxy());
+	//ShowTrayIcon(GetWindowsProxy());
+	ShowTrayIcon();
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		TranslateMessage(&msg);
@@ -513,4 +517,3 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR lpCmdLine, int nCmd
 	}
 	return 0;
 }
-
